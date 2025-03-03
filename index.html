@@ -52,13 +52,15 @@
         <input type="number" id="credits" placeholder="مثال: 1000" disabled>
         <button onclick="calculateTax()" disabled><i class="fas fa-percent"></i> احسب الضريبة</button>
         <p id="result"></p>
+        <label for="discord-username"><i class="fas fa-user"></i> أدخل اسم مستخدم الديسكورد الجديد:</label>
+        <input type="text" id="discord-username" placeholder="مثال: username#1234" disabled>
+        <button onclick="updateDiscordUsername()" disabled><i class="fas fa-save"></i> تحديث اسم المستخدم</button>
     </div>
 
     <script>
         let botConnected = false;
 
         function connectDiscord() {
-            // هنا نرسل طلبًا إلى السيرفر للتحقق من حالة البوت
             fetch('/api/connect')
                 .then(response => response.json())
                 .then(data => {
@@ -67,6 +69,8 @@
                         document.getElementById("status").innerText = "البوت متصل!";
                         document.getElementById("credits").disabled = false;
                         document.querySelector("button[onclick='calculateTax()']").disabled = false;
+                        document.getElementById("discord-username").disabled = false;
+                        document.querySelector("button[onclick='updateDiscordUsername()']").disabled = false;
                     } else {
                         alert("تعذر الاتصال بالبوت!");
                     }
@@ -87,6 +91,25 @@
                 <strong>المبلغ المأخوذ من برو بوت:</strong> ${tax} <br>
                 <strong>المبلغ الذي يصل للشخص:</strong> ${finalAmount}
             `;
+        }
+
+        function updateDiscordUsername() {
+            let username = document.getElementById("discord-username").value;
+            fetch('/api/update-username', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("تم تحديث اسم المستخدم بنجاح!");
+                } else {
+                    alert("فشل في تحديث اسم المستخدم!");
+                }
+            });
         }
     </script>
 </body>
